@@ -327,4 +327,3 @@ pnpm dev                      # Proyek Monorepo (menjalankan Frontend & Backend 
 ---
 
 *Selamat berkreasi dan selamat melakukan scaling pada proyek-proyek hebat ini! Workspace ini sepenuhnya milik Anda untuk bereksperimen, meningkatkan performa sistem, dan membangun masa depan startup teknologi yang luar biasa.* 🚀
-# warkop-yareh
