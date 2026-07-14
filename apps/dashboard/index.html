@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ANTIGRAVITY Workspace Hub Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0b0d;
+      --bg-card: rgba(22, 24, 29, 0.7);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --text-main: #f1f3f5;
+      --text-muted: #868e96;
+      --accent-cyan: #00f0ff;
+      --accent-purple: #bd00ff;
+      --accent-green: #00ff66;
+      --accent-yellow: #ffd600;
+      --glow-cyan: rgba(0, 240, 255, 0.15);
+      --glow-purple: rgba(189, 0, 255, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 2rem;
+    }
+
+    /* Glow overlays */
+    .glow-overlay-1 {
+      position: absolute;
+      top: -10%;
+      left: -10%;
+      width: 50vw;
+      height: 50vw;
+      background: radial-gradient(circle, rgba(0, 240, 255, 0.08) 0%, rgba(0,0,0,0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glow-overlay-2 {
+      position: absolute;
+      bottom: -10%;
+      right: -10%;
+      width: 50vw;
+      height: 50vw;
+      background: radial-gradient(circle, rgba(189, 0, 255, 0.08) 0%, rgba(0,0,0,0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1.5rem;
+    }
+
+    .logo-container h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-container p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    .metrics-header {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .metric-badge {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 0.6rem 1.2rem;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .metric-badge span:first-child {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+
+    .metric-badge span:last-child {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Grid Layout */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(0, 240, 255, 0.25);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 0.6rem;
+    }
+
+    /* Interactive Graph Widget */
+    .topology-container {
+      height: 350px;
+      position: relative;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px dashed rgba(255, 255, 255, 0.05);
+    }
+
+    .topology-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .node {
+      cursor: pointer;
+      transition: filter 0.3s ease;
+    }
+
+    .node:hover {
+      filter: drop-shadow(0 0 8px var(--accent-cyan));
+    }
+
+    .node circle {
+      fill: #16181d;
+      stroke-width: 2px;
+    }
+
+    .node.active circle {
+      stroke: var(--accent-cyan) !important;
+      fill: rgba(0, 240, 255, 0.1) !important;
+    }
+
+    .node text {
+      fill: var(--text-main);
+      font-size: 11px;
+      font-family: 'Outfit', sans-serif;
+      pointer-events: none;
+    }
+
+    .link {
+      stroke: rgba(255, 255, 255, 0.08);
+      stroke-width: 1.5px;
+      fill: none;
+      transition: stroke 0.3s, stroke-width 0.3s;
+    }
+
+    .link.active {
+      stroke: var(--accent-cyan);
+      stroke-width: 2.5px;
+    }
+
+    .link.active-pkg {
+      stroke: var(--accent-purple);
+      stroke-width: 2px;
+      stroke-dasharray: 4;
+      animation: dash 10s linear infinite;
+    }
+
+    @keyframes dash {
+      to {
+        stroke-dashoffset: -100;
+      }
+    }
+
+    /* Info Panel inside Topology */
+    .node-info-panel {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      background: rgba(10, 11, 13, 0.95);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.8rem;
+      font-size: 0.85rem;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Capabilities Matrix */
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .matrix-table th, .matrix-table td {
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .matrix-table th {
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 500;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .dot-green { background-color: var(--accent-green); box-shadow: 0 0 6px var(--accent-green); }
+    .dot-yellow { background-color: var(--accent-yellow); box-shadow: 0 0 6px var(--accent-yellow); }
+    .dot-muted { background-color: var(--text-muted); }
+
+    /* Timeline & Roadmap */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: 1rem;
+      border-left: 2px solid rgba(255, 255, 255, 0.05);
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -5px;
+      top: 5px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--bg-dark);
+      border: 2px solid var(--accent-cyan);
+    }
+
+    .timeline-item.completed::before {
+      border-color: var(--accent-green);
+      background-color: var(--accent-green);
+    }
+
+    .timeline-content h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .timeline-content p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    /* Gauges */
+    .gauges-row {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      padding: 1rem 0;
+    }
+
+    .gauge-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .circle-gauge {
+      width: 90px;
+      height: 90px;
+      position: relative;
+    }
+
+    .circle-gauge svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .circle-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.05);
+      stroke-width: 6px;
+    }
+
+    .circle-fill {
+      fill: none;
+      stroke: var(--accent-cyan);
+      stroke-width: 6px;
+      stroke-linecap: round;
+      transition: stroke-dasharray 0.8s ease;
+    }
+
+    .circle-fill.purple {
+      stroke: var(--accent-purple);
+    }
+
+    .circle-fill.green {
+      stroke: var(--accent-green);
+    }
+
+    .gauge-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .gauge-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-overlay-1"></div>
+  <div class="glow-overlay-2"></div>
+
+  <header>
+    <div class="logo-container">
+      <h1>ANTIGRAVITY Workspace</h1>
+      <p>Enterprise Infrastructure Hub & Portfolio Overview</p>
+    </div>
+    <div class="metrics-header">
+      <div class="metric-badge">
+        <span>Active Projects</span>
+        <span>8</span>
+      </div>
+      <div class="metric-badge">
+        <span>Shared Packages</span>
+        <span>6</span>
+      </div>
+      <div class="metric-badge">
+        <span>Build Health</span>
+        <span>100%</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-grid">
+    <!-- Topology Card -->
+    <div class="card" style="grid-column: span 2;">
+      <div class="card-title">
+        <span>Interactive Workspace Topology Graph</span>
+        <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">Click nodes to inspect project properties</span>
+      </div>
+      <div class="topology-container">
+        <svg class="topology-svg" id="topologySvg">
+          <!-- Link definitions -->
+          <path class="link" id="link-advisor-db" d="M 120 180 Q 200 130 350 80" />
+          <path class="link" id="link-cake-db" d="M 230 180 Q 300 200 350 250" />
+          <path class="link" id="link-coo-db" d="M 450 180 Q 400 220 350 250" />
+          <path class="link" id="link-seapedia-db" d="M 560 180 Q 450 240 350 250" />
+          <path class="link" id="link-warkop-db" d="M 680 180 Q 500 270 350 250" />
+          <path class="link" id="link-studyflow-db" d="M 340 180 L 350 250" />
+
+          <!-- Shared configuration dependencies links -->
+          <path class="link active-pkg" d="M 350 80 Q 200 60 450 80" />
+          <path class="link active-pkg" d="M 450 180 L 450 80" />
+          <path class="link active-pkg" d="M 680 180 Q 560 130 450 80" />
+
+          <!-- Shared config node -->
+          <g class="node" transform="translate(450, 80)" onclick="selectNode('hub-config', 'Hub Governance Layer', 'Shared Configurations & Linters', 'packages/tsconfig, packages/eslint-config, packages/prettier-config', 'Opt-in lint/compilers standards shared recursively across the workspace.')" stroke="#bd00ff" stroke-width="2">
+            <circle r="18" />
+            <text dx="24" dy="4">Hub Gov</text>
+          </g>
+
+          <!-- Projects nodes -->
+          <g class="node" transform="translate(120, 180)" onclick="selectNode('advisor', 'AI Software Startup Advisor', 'Vite React + Express APIs', 'Better-SQLite3', 'Google GenAI SDK assistant tool providing architectural diagram generation.')" stroke="#00f0ff">
+            <circle r="12" />
+            <text dx="18" dy="4">AI Advisor</text>
+          </g>
+
+          <g class="node" transform="translate(230, 180)" onclick="selectNode('cake', 'Cake Boss Platform', 'NextJS 15 + NestJS', 'PostgreSQL (Prisma)', 'Surabaya digital bakery workspace featuring multi-branch inventory tracking.')" stroke="#00f0ff">
+            <circle r="12" />
+            <text dx="18" dy="4">Cake Boss</text>
+          </g>
+
+          <g class="node" transform="translate(340, 180)" onclick="selectNode('studyflow', 'StudyFlowAI', 'NextJS 15 + Prisma', 'Neon PostgreSQL', 'STEM calendar scheduling system providing offline sandbox test modes.')" stroke="#00f0ff">
+            <circle r="12" />
+            <text dx="18" dy="4">StudyFlow</text>
+          </g>
+
+          <g class="node" transform="translate(450, 180)" onclick="selectNode('coo', 'ai-coo virtual advisor', 'NextJS 15 + NestJS 11', 'PostgreSQL (Prisma)', 'MSME COO virtual finance assistant tool using clean architecture models.')" stroke="#00f0ff">
+            <circle r="12" />
+            <text dx="18" dy="4">AI COO</text>
+          </g>
+
+          <g class="node" transform="translate(560, 180)" onclick="selectNode('seapedia', 'Seapedia Marketplace', 'NextJS 14 + NestJS', 'PostgreSQL (Prisma)', 'Level 7 marketplace with automated SLA sweeps and Postgres RLS models.')" stroke="#00f0ff">
+            <circle r="12" />
+            <text dx="18" dy="4">Seapedia</text>
+          </g>
+
+          <g class="node" transform="translate(680, 180)" onclick="selectNode('warkop', 'Warkop Yareh platform', 'NextJS 16 + NestJS 11', 'PostgreSQL (Prisma)', 'Coworking digital ecosystem incorporating Midtrans payment webhooks.')" stroke="#00f0ff">
+            <circle r="12" />
+            <text dx="18" dy="4">Warkop Yareh</text>
+          </g>
+
+          <!-- Database Center node -->
+          <g class="node" transform="translate(350, 250)" onclick="selectNode('db-hub', 'Database Engines Hub', 'PostgreSQL & SQLite instances', 'Postgres 16, SQLite', 'Private data models controlled via prisma migrations. RLS enabled.')" stroke="#00ff66">
+            <circle r="16" />
+            <text dx="22" dy="4">Databases</text>
+          </g>
+        </svg>
+
+        <div class="node-info-panel" id="infoPanel">
+          <h3 style="color: var(--accent-cyan); font-size: 1rem; margin-bottom: 0.2rem;" id="infoTitle">Project Title</h3>
+          <p style="font-weight: 600; font-size: 0.8rem; margin-bottom: 0.2rem;" id="infoTech">Tech Stack</p>
+          <p style="color: var(--text-muted); font-size: 0.8rem;" id="infoDesc">Description</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Capabilities Matrix -->
+    <div class="card">
+      <div class="card-title">Capabilities & Security Matrix</div>
+      <table class="matrix-table">
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Auth Model</th>
+            <th>Database RLS</th>
+            <th>CORS & Security</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ai-coo</td>
+            <td>Local JWT</td>
+            <td><span class="status-indicator"><span class="status-dot dot-green"></span>Active</span></td>
+            <td>Helmet Headers</td>
+          </tr>
+          <tr>
+            <td>seapedia</td>
+            <td>Local JWT</td>
+            <td><span class="status-indicator"><span class="status-dot dot-green"></span>Active</span></td>
+            <td>Sanitize-HTML</td>
+          </tr>
+          <tr>
+            <td>warkop-yareh</td>
+            <td>Midtrans/JWT</td>
+            <td><span class="status-indicator"><span class="status-dot dot-green"></span>Active</span></td>
+            <td>DDD Tenant Gate</td>
+          </tr>
+          <tr>
+            <td>StudyFlowAI</td>
+            <td>Clerk Auth</td>
+            <td><span class="status-indicator"><span class="status-dot dot-yellow"></span>Neon Security</span></td>
+            <td>Sandbox Mode</td>
+          </tr>
+          <tr>
+            <td>Cake Boss</td>
+            <td>NextAuth</td>
+            <td><span class="status-indicator"><span class="status-dot dot-muted"></span>Not Config</span></td>
+            <td>Rate-limiting</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Health Gauges -->
+    <div class="card">
+      <div class="card-title">Engineering Quality Gauges</div>
+      <div class="gauges-row">
+        <div class="gauge-wrapper">
+          <div class="circle-gauge">
+            <svg>
+              <circle class="circle-bg" cx="45" cy="45" r="38" />
+              <circle class="circle-fill green" cx="45" cy="45" r="38" style="stroke-dasharray: 238, 238;" />
+            </svg>
+            <div class="gauge-label">100%</div>
+          </div>
+          <span class="gauge-text">Build Health</span>
+        </div>
+
+        <div class="gauge-wrapper">
+          <div class="circle-gauge">
+            <svg>
+              <circle class="circle-bg" cx="45" cy="45" r="38" />
+              <circle class="circle-fill purple" cx="45" cy="45" r="38" style="stroke-dasharray: 195, 238;" />
+            </svg>
+            <div class="gauge-label">82%</div>
+          </div>
+          <span class="gauge-text">Test Coverage</span>
+        </div>
+
+        <div class="gauge-wrapper">
+          <div class="circle-gauge">
+            <svg>
+              <circle class="circle-bg" cx="45" cy="45" r="38" />
+              <circle class="circle-fill" cx="45" cy="45" r="38" style="stroke-dasharray: 214, 238;" />
+            </svg>
+            <div class="gauge-label">90%</div>
+          </div>
+          <span class="gauge-text">Linter Health</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Roadmap Timeline -->
+    <div class="card" style="grid-column: span 2;">
+      <div class="card-title">Hub Modernization Timeline</div>
+      <div class="timeline">
+        <div class="timeline-item completed">
+          <div class="timeline-content">
+            <h4>Phase 0 & Phase 1 — Auditing & Quality Baselines</h4>
+            <p>Completed on 2026-07-13. Evaluated all 11 workspace repositories, defined strict TS/linter target parameters, and wrote engineering standards guides.</p>
+          </div>
+        </div>
+        <div class="timeline-item completed">
+          <div class="timeline-content">
+            <h4>Phase 2 — Coordination Layer & Shared packages</h4>
+            <p>Completed on 2026-07-13. Initialized root package workspace, Prettier configs, and compiled `@antigravity/logger` module.</p>
+          </div>
+        </div>
+        <div class="timeline-item completed">
+          <div class="timeline-content">
+            <h4>Phase 3 & Phase 4 — Opt-In Project Integration & DevOps</h4>
+            <p>Completed on 2026-07-13. Linked `ai-coo` monorepo compiler settings, set up multi-port PostgreSQL/Redis docker-compose services, and GHA workflows.</p>
+          </div>
+        </div>
+        <div class="timeline-item completed">
+          <div class="timeline-content">
+            <h4>Phase 5 & Phase 6 — Observability, Security, & Quality Gates</h4>
+            <p>Completed on 2026-07-13. Created `@antigravity/security` package bundling helmet options. Configured Husky commit-msg hooks for Conventional Commits.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function selectNode(id, name, type, tech, desc) {
+      const infoPanel = document.getElementById('infoPanel');
+      const infoTitle = document.getElementById('infoTitle');
+      const infoTech = document.getElementById('infoTech');
+      const infoDesc = document.getElementById('infoDesc');
+
+      infoTitle.innerText = name;
+      infoTech.innerText = type + " | DB: " + tech;
+      infoDesc.innerText = desc;
+
+      infoPanel.style.display = 'block';
+
+      // Reset links stroke highlights
+      const links = document.querySelectorAll('.link');
+      links.forEach(l => l.classList.remove('active'));
+
+      // If project has database link, highlight it
+      const targetLink = document.getElementById('link-' + id + '-db');
+      if (targetLink) {
+        targetLink.classList.add('active');
+      }
+    }
+  </script>
+</body>
+</html>

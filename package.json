@@ -1,0 +1,24 @@
+{
+  "name": "antigravity-hub",
+  "private": true,
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "format": "prettier --write \"packages/**/*.{ts,tsx,js,jsx,json,md}\" \"*.{js,json,md,yaml,yml,mjs}\"",
+    "format:check": "prettier --check \"packages/**/*.{ts,tsx,js,jsx,json,md}\" \"*.{js,json,md,yaml,yml,mjs}\"",
+    "lint": "eslint \"packages/**/*.{ts,js,mjs}\" \"eslint.config.mjs\"",
+    "clean": "pnpm -r exec rimraf dist node_modules",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
+    "@eslint/js": "^9.16.0",
+    "eslint": "^9.16.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.8",
+    "prettier": "^3.3.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.0"
+  }
+}

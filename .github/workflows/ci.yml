@@ -1,0 +1,41 @@
+name: ANTIGRAVITY Hub - Continuous Integration
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-hub:
+    name: Validate Hub Coordination Layer
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prettier Formatting Check
+        run: pnpm format:check
+
+      - name: Global Lint Check
+        run: pnpm lint
+
+      - name: Compile Shared Packages
+        run: pnpm --filter "@antigravity/*" build
+
+      - name: Run Logger Tests (if any)
+        run: pnpm --filter "@antigravity/logger" test --if-present

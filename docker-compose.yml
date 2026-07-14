@@ -1,0 +1,142 @@
+services:
+  # ai-coo Services
+  aicoo-postgres:
+    image: postgres:16-alpine
+    container_name: aicoo-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: aicoo
+    ports:
+      - '5432:5432'
+    volumes:
+      - aicoo-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  aicoo-redis:
+    image: redis:7-alpine
+    container_name: aicoo-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - aicoo-redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # seapedia Services
+  seapedia-postgres:
+    image: postgres:16-alpine
+    container_name: seapedia-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: seapedia
+      POSTGRES_PASSWORD: seapedia
+      POSTGRES_DB: seapedia
+    ports:
+      - '5433:5432'
+    volumes:
+      - seapedia-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U seapedia -d seapedia']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  seapedia-redis:
+    image: redis:7-alpine
+    container_name: seapedia-redis
+    restart: unless-stopped
+    ports:
+      - '6380:6379'
+    volumes:
+      - seapedia-redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # warkop-yareh Services
+  warkop-postgres:
+    image: postgres:16-alpine
+    container_name: warkop-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: warkop
+      POSTGRES_PASSWORD: warkop
+      POSTGRES_DB: warkop
+    ports:
+      - '5434:5432'
+    volumes:
+      - warkop-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U warkop -d warkop']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  warkop-redis:
+    image: redis:7-alpine
+    container_name: warkop-redis
+    restart: unless-stopped
+    ports:
+      - '6381:6379'
+    volumes:
+      - warkop-redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Cake Boss Services
+  cakeboss-postgres:
+    image: postgres:16-alpine
+    container_name: cakeboss-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: cakeboss
+      POSTGRES_PASSWORD: cakeboss
+      POSTGRES_DB: cakeboss
+    ports:
+      - '5435:5432'
+    volumes:
+      - cakeboss-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U cakeboss -d cakeboss']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  cakeboss-redis:
+    image: redis:7-alpine
+    container_name: cakeboss-redis
+    restart: unless-stopped
+    ports:
+      - '6382:6379'
+    volumes:
+      - cakeboss-redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  aicoo-pgdata:
+  aicoo-redisdata:
+  seapedia-pgdata:
+  seapedia-redisdata:
+  warkop-pgdata:
+  warkop-redisdata:
+  cakeboss-pgdata:
+  cakeboss-redisdata:
