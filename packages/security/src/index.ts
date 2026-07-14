@@ -38,7 +38,7 @@ export const standardHelmetOptions = {
   hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
   ieNoOpen: true,
   noSniff: true,
-  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' as const },
   xssFilter: true,
 };
 
