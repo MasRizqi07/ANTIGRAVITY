@@ -18,6 +18,23 @@ export default tseslint.config(
     },
   },
   {
+    files: ['scripts/**/*.js', 'scripts/**/*.mjs'],
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        __dirname: 'readonly',
+        require: 'readonly',
+        module: 'readonly',
+        exports: 'readonly',
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+      'no-console': 'off',
+    },
+  },
+  {
     ignores: ['**/node_modules/**', '**/dist/**', '**/.next/**', '**/build/**'],
   }
 );
