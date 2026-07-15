@@ -105,7 +105,6 @@ function main() {
       items.forEach((item) => {
         const itemPath = path.join(catPath, item);
         if (fs.statSync(itemPath).isDirectory()) {
-          // If it is a directory, count it as a project
           categoryCounts[cat]++;
           foundProjects.push({
             category: cat,
@@ -118,13 +117,42 @@ function main() {
   });
 
   const totalCount = foundProjects.length;
+  const isCheckMode = process.argv.includes('--check');
+
+  if (isCheckMode) {
+    const readmeContent = fs.readFileSync(readmePath, 'utf8');
+    const match = readmeContent.match(/mengintegrasikan \*\*(\d+) proyek/);
+    if (!match) {
+      console.error('ERROR: Could not find project count in README.md!');
+      process.exit(1);
+    }
+    const currentCount = parseInt(match[1], 10);
+    if (currentCount !== totalCount) {
+      console.error(
+        '\n======================================================================'
+      );
+      console.error(
+        '[ERROR] README project count is out of sync with actual folders!'
+      );
+      console.error(`- Folders on disk: ${totalCount}`);
+      console.error(`- Count in README: ${currentCount}`);
+      console.error(
+        'Please run "node scripts/update-readme.js" to update README.md first.'
+      );
+      console.error(
+        '======================================================================\n'
+      );
+      process.exit(1);
+    }
+    console.log('README project count is in sync with folders on disk.');
+    process.exit(0);
+  }
 
   console.log(`Found ${totalCount} projects:`);
   categories.forEach((cat) => {
     console.log(`- ${cat}: ${categoryCounts[cat]}`);
   });
 
-  // Construct Markdown Table
   let tableMarkdown = [
     '| #   | Kategori | Nama Folder / Proyek | Deskripsi Singkat | Tech Stack Utama | Arsitektur & Tipe Proyek | Status Kesiapan |',
     '| --- | --- | --- | --- | --- | --- | --- |',
@@ -146,17 +174,13 @@ function main() {
   });
 
   const tableStr = tableMarkdown.join('\n');
-
-  // Read README.md
   let readmeContent = fs.readFileSync(readmePath, 'utf8');
 
-  // 1. Update project count in description
   const countRegex =
     /mengintegrasikan \*\*\d+ proyek.*?\*\* yang telah dibangun/g;
   const countRepl = `mengintegrasikan **${totalCount} proyek (monorepo, multirepo, dan dokumentasi)** yang telah dibangun`;
   readmeContent = readmeContent.replace(countRegex, countRepl);
 
-  // Fallback if the pattern changed slightly
   if (!readmeContent.includes(countRepl)) {
     readmeContent = readmeContent.replace(
       /mengintegrasikan \*\*.*?\*\* yang telah dibangun/,
@@ -164,7 +188,6 @@ function main() {
     );
   }
 
-  // 2. Insert or replace the table between markers
   const startMarker = '<!-- PROJECT_TABLE_START -->';
   const endMarker = '<!-- PROJECT_TABLE_END -->';
 
@@ -183,13 +206,11 @@ function main() {
       endMarker +
       postParts[1];
   } else {
-    // If markers do not exist, we will replace the old table structure
     const oldTableRegex = /\| # {3}\| Nama Folder[\s\S]*?(?=\n\n---|\n\n##)/;
     const replacement = `${startMarker}\n\n${tableStr}\n\n${endMarker}`;
     readmeContent = readmeContent.replace(oldTableRegex, replacement);
   }
 
-  // Write README.md
   fs.writeFileSync(readmePath, readmeContent, 'utf8');
   console.log('README.md updated successfully!');
 }
