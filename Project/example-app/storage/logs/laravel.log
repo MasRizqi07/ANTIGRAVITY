@@ -1,0 +1,23 @@
+[2026-05-19 07:37:57] local.ERROR: Required. {"exception":"[object] (Laravel\\Prompts\\Exceptions\\NonInteractiveValidationException(code: 0): Required. at /home/achmad-rizqi-mubarok/Documents/coding/example-app/vendor/laravel/prompts/src/Concerns/Interactivity.php:32)
+[stacktrace]
+#0 /home/achmad-rizqi-mubarok/Documents/coding/example-app/vendor/laravel/prompts/src/Prompt.php(114): Laravel\\Prompts\\Prompt->default()
+#1 /home/achmad-rizqi-mubarok/Documents/coding/example-app/vendor/laravel/prompts/src/helpers.php(130): Laravel\\Prompts\\Prompt->prompt()
+#2 /home/achmad-rizqi-mubarok/Documents/coding/example-app/vendor/laravel/boost/src/Console/InstallCommand.php(304): Laravel\\Prompts\\multiselect()
+#3 /home/achmad-rizqi-mubarok/Documents/coding/example-app/vendor/laravel/boost/src/Console/InstallCommand.php(116): Laravel\\Boost\\Console\\InstallCommand->selectAgents()
+#4 /home/achmad-rizqi-mubarok/Documents/coding/example-app/vendor/laravel/boost/src/Console/InstallCommand.php(89): Laravel\\Boost\\Console\\InstallCommand->collectInstallationPreferences()
+#5 /home/achmad-rizqi-mubarok/Documents/coding/example-app/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Laravel\\Boost\\Console\\InstallCommand->handle()
+#6 /home/achmad-rizqi-mubarok/Documents/coding/example-app/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate\\Container\\BoundMethod::{closure:Illuminate\\Container\\BoundMethod::call():35}()
+#7 /home/achmad-rizqi-mubarok/Documents/coding/example-app/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(96): Illuminate\\Container\\Util::unwrapIfClosure()
+#8 /home/achmad-rizqi-mubarok/Documents/coding/example-app/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#9 /home/achmad-rizqi-mubarok/Documents/coding/example-app/vendor/laravel/framework/src/Illuminate/Container/Container.php(799): Illuminate\\Container\\BoundMethod::call()
+#10 /home/achmad-rizqi-mubarok/Documents/coding/example-app/vendor/laravel/framework/src/Illuminate/Console/Command.php(280): Illuminate\\Container\\Container->call()
+#11 /home/achmad-rizqi-mubarok/Documents/coding/example-app/vendor/symfony/console/Command/Command.php(291): Illuminate\\Console\\Command->execute()
+#12 /home/achmad-rizqi-mubarok/Documents/coding/example-app/vendor/laravel/framework/src/Illuminate/Console/Command.php(249): Symfony\\Component\\Console\\Command\\Command->run()
+#13 /home/achmad-rizqi-mubarok/Documents/coding/example-app/vendor/symfony/console/Application.php(1107): Illuminate\\Console\\Command->run()
+#14 /home/achmad-rizqi-mubarok/Documents/coding/example-app/vendor/symfony/console/Application.php(356): Symfony\\Component\\Console\\Application->doRunCommand()
+#15 /home/achmad-rizqi-mubarok/Documents/coding/example-app/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#16 /home/achmad-rizqi-mubarok/Documents/coding/example-app/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#17 /home/achmad-rizqi-mubarok/Documents/coding/example-app/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle()
+#18 /home/achmad-rizqi-mubarok/Documents/coding/example-app/artisan(16): Illuminate\\Foundation\\Application->handleCommand()
+#19 {main}
+"} 
