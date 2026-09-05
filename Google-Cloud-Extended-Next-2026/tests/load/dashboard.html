@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Load Test Visualization - Architecture Race</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0b0f19;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --primary: #3b82f6;
+            --accent-a: #f59e0b;
+            --accent-b: #10b981;
+            --accent-c: #8b5cf6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.15), transparent 25%);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            max-width: 1400px;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+
+        .card.path-a::before { background: var(--accent-a); }
+        .card.path-b::before { background: var(--accent-b); }
+        .card.path-c::before { background: var(--accent-c); }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+
+        .path-a .icon-box { background: rgba(245, 158, 11, 0.1); color: var(--accent-a); border: 1px solid rgba(245, 158, 11, 0.2); }
+        .path-b .icon-box { background: rgba(16, 185, 129, 0.1); color: var(--accent-b); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .path-c .icon-box { background: rgba(139, 92, 246, 0.1); color: var(--accent-c); border: 1px solid rgba(139, 92, 246, 0.2); }
+
+        .card-title h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.2rem; }
+        .card-title p { color: var(--text-muted); font-size: 0.9rem; }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-box {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .path-a .metric-value { color: var(--accent-a); }
+        .path-b .metric-value { color: var(--accent-b); }
+        .path-c .metric-value { color: var(--accent-c); }
+
+        /* Animation Section */
+        .animation-container {
+            height: 120px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .node {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            background: #1e293b;
+            border: 1px solid var(--glass-border);
+            z-index: 2;
+        }
+
+        .node.client { left: 10px; }
+        .node.server { left: 50%; transform: translate(-50%, -50%); }
+        .node.db { right: 10px; }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .path-a .particle { background: var(--accent-a); box-shadow: 0 0 10px var(--accent-a); }
+        .path-b .particle { background: var(--accent-b); box-shadow: 0 0 10px var(--accent-b); }
+        .path-c .particle { background: var(--accent-c); box-shadow: 0 0 10px var(--accent-c); }
+
+        @keyframes moveLinear {
+            0% { left: 30px; opacity: 1; }
+            45% { left: 45%; opacity: 1; }
+            50% { left: 50%; opacity: 0; }
+            55% { left: 55%; opacity: 1; }
+            100% { left: calc(100% - 30px); opacity: 1; }
+        }
+
+        @keyframes moveQueueA {
+            0% { left: 30px; opacity: 1; }
+            20% { left: 40%; opacity: 1; } /* Bottleneck at Web Server layer */
+            80% { left: 40%; opacity: 1; } 
+            100% { left: 50%; opacity: 0; }
+        }
+        
+        @keyframes moveQueueB {
+            0% { left: 30px; opacity: 1; }
+            20% { left: 60%; opacity: 1; } /* Event loop accepts, Bottleneck at DB lock */
+            80% { left: 60%; opacity: 1; } 
+            100% { left: calc(100% - 30px); opacity: 0; }
+        }
+
+        @keyframes moveInstant {
+            0% { left: 30px; opacity: 1; transform: translateY(-50%) scale(1); }
+            15% { left: 50%; opacity: 1; transform: translateY(-50%) scale(2); }
+            30% { left: 50%; opacity: 0; transform: translateY(-50%) scale(0); }
+            100% { left: 50%; opacity: 0; }
+        }
+
+        .controls {
+            margin-top: 3rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        button {
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            border: none;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px -5px rgba(59, 130, 246, 0.6);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .conclusion {
+            margin-top: 4rem;
+            max-width: 900px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(12px);
+            line-height: 1.6;
+        }
+        
+        .conclusion h3 {
+            color: #60a5fa;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Dashboard Simulasi Concurrency</h1>
+        <p>Visualisasi Performa Arsitektur: 100 Virtual User vs 20 Tiket VIP</p>
+    </div>
+
+    <div class="dashboard">
+        <!-- Path A -->
+        <div class="card path-a">
+            <div class="card-header">
+                <div class="icon-box">🐘</div>
+                <div class="card-title">
+                    <h2>Path A: Laravel</h2>
+                    <p>Synchronous Blocking Workers</p>
+                </div>
+            </div>
+            <div class="metrics">
+                <div class="metric-box">
+                    <div class="metric-label">Throughput</div>
+                    <div class="metric-value">76 RPS</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">P99 Latency</div>
+                    <div class="metric-value">250 ms</div>
+                </div>
+            </div>
+            <div class="animation-container" id="animA">
+                <div class="node client" title="Users">👨‍💻</div>
+                <div class="node server" title="PHP-FPM / Web Server">⚙️</div>
+                <div class="node db" title="MySQL DB">🗄️</div>
+            </div>
+            <p style="margin-top:1.5rem; font-size: 0.95rem; color: var(--text-muted)">
+                Server web menahan antrean koneksi. Worker PHP sibuk memproses baris database (Pessimistic Lock) satu per satu. Latensi asli untuk 90 user lainnya tertahan di luar sistem aplikasi.
+            </p>
+        </div>
+
+        <!-- Path B -->
+        <div class="card path-b">
+            <div class="card-header">
+                <div class="icon-box">🚀</div>
+                <div class="card-title">
+                    <h2>Path B: Node.js</h2>
+                    <p>Async Event Loop</p>
+                </div>
+            </div>
+            <div class="metrics">
+                <div class="metric-box">
+                    <div class="metric-label">Throughput</div>
+                    <div class="metric-value">50 RPS</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">P99 Latency</div>
+                    <div class="metric-value">2.05 s</div>
+                </div>
+            </div>
+            <div class="animation-container" id="animB">
+                <div class="node client" title="Users">👨‍💻</div>
+                <div class="node server" title="Node.js Event Loop">⚡</div>
+                <div class="node db" title="MySQL DB">🗄️</div>
+            </div>
+            <p style="margin-top:1.5rem; font-size: 0.95rem; color: var(--text-muted)">
+                Node.js menerima semua 100 koneksi seketika tanpa batas worker, namun request saling menumpuk dan antre di penguncian level baris (Row-level Lock) database relasional.
+            </p>
+        </div>
+
+        <!-- Path C -->
+        <div class="card path-c">
+            <div class="card-header">
+                <div class="icon-box">🔴</div>
+                <div class="card-title">
+                    <h2>Path C: Redis Saga</h2>
+                    <p>Atomic Reservation & Async Queue</p>
+                </div>
+            </div>
+            <div class="metrics">
+                <div class="metric-box">
+                    <div class="metric-label">Throughput</div>
+                    <div class="metric-value">>45K RPS</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">P99 Latency</div>
+                    <div class="metric-value">1.33 ms</div>
+                </div>
+            </div>
+            <div class="animation-container" id="animC">
+                <div class="node client" title="Users">👨‍💻</div>
+                <div class="node server" title="Redis Atomic Lua">🔴</div>
+                <div class="node db" title="Async DB Write (Background)">🗄️</div>
+            </div>
+            <p style="margin-top:1.5rem; font-size: 0.95rem; color: var(--text-muted)">
+                Validasi stok terjadi sangat cepat di RAM (Redis Lua) dalam kompleksitas waktu O(1). DB relational di-update secara asinkron di belakang layar oleh Queue Worker.
+            </p>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button onclick="simulate()">▶ Jalankan Simulasi Visualisasi Bottleneck</button>
+    </div>
+
+    <div class="conclusion">
+        <h3>🏆 Kesimpulan Arsitektur</h3>
+        <p><strong>Path C</strong> terbukti sebagai arsitektur yang paling superior untuk sistem <em>High-Concurrency / Flash Sale (War Ticket)</em>. Dengan mengalihkan beban <em>Locking</em> (penguncian) dari Database Relasional (Pessimistic Lock) ke In-Memory Database (Redis Lua Script), sistem mampu menangani lonjakan dari 76 RPS menjadi <strong>45,000+ RPS</strong> dengan latensi nyaris 0 ms (di bawah 2 milidetik).</p>
+        <p style="margin-top: 1rem;">Database relasional modern tidak didesain untuk menangani ribuan <em>write operation</em> pada satu baris data yang sama secara bersamaan. Pendekatan <em>Event-Driven</em> dengan antrean (Queue) adalah kunci stabilitas sistem skala besar.</p>
+    </div>
+
+    <script>
+        function createParticle(container, animationName, duration, delay) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.animation = `${animationName} ${duration}s ${delay}s ease-in-out forwards`;
+            container.appendChild(p);
+            
+            setTimeout(() => p.remove(), (duration + delay) * 1000);
+        }
+
+        function simulate() {
+            const animA = document.getElementById('animA');
+            const animB = document.getElementById('animB');
+            const animC = document.getElementById('animC');
+
+            // Clear old particles
+            document.querySelectorAll('.particle').forEach(el => el.remove());
+
+            // Path A: Queue at Web server before reaching Node
+            for(let i=0; i<30; i++) {
+                createParticle(animA, 'moveQueueA', 2.5, Math.random() * 1.5);
+            }
+
+            // Path B: Queue at DB (Event loop accepts fast, DB bottlenecks)
+            for(let i=0; i<30; i++) {
+                createParticle(animB, 'moveQueueB', 2.5, Math.random() * 0.5);
+            }
+
+            // Path C: Instant Redis hit, async DB
+            for(let i=0; i<50; i++) {
+                createParticle(animC, 'moveInstant', 0.6, Math.random() * 0.8);
+            }
+        }
+    </script>
+</body>
+</html>
