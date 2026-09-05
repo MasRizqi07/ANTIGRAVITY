@@ -1,0 +1,18 @@
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY tsconfig.json ./
+COPY src/ ./src/
+RUN npm run build
+
+FROM node:18-alpine
+WORKDIR /app
+COPY --from=builder /app/package*.json ./
+RUN npm ci --only=production
+COPY --from=builder /app/dist ./dist
+
+# Create a small script to start the worker instead of the API
+RUN echo "const { OrderConsumer } = require('./dist/workers/orderConsumer'); const worker = new OrderConsumer(); worker.start();" > start_worker.js
+
+CMD ["node", "start_worker.js"]

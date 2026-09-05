@@ -1,0 +1,31 @@
+apiVersion: run.googleapis.com/v1
+kind: Job
+metadata:
+  name: ticket-booking-worker
+  annotations:
+    run.googleapis.com/launch-stage: BETA
+spec:
+  template:
+    spec:
+      taskCount: 5 # Run 5 parallel workers to drain the queue rapidly
+      template:
+        spec:
+          containers:
+            - image: gcr.io/PROJECT_ID/ticket-booking-worker:latest
+              resources:
+                limits:
+                  cpu: '1000m'
+                  memory: '512Mi'
+              env:
+                - name: NODE_ENV
+                  value: 'production'
+                - name: DB_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: cloudsql-db-host
+                      key: latest
+                - name: REDIS_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: memorystore-redis-url
+                      key: latest

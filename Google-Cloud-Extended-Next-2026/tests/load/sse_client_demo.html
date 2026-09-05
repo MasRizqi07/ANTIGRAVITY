@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Real-Time Ticket Order Status</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; padding: 2rem; }
+        .log { background: #f4f4f4; padding: 1rem; border-radius: 8px; margin-top: 1rem; font-family: monospace; white-space: pre-wrap;}
+        .status { font-weight: bold; padding: 0.25rem 0.5rem; border-radius: 4px; }
+        .CONFIRMED { background: #d4edda; color: #155724; }
+        .FAILED { background: #f8d7da; color: #721c24; }
+        .PROCESSING { background: #fff3cd; color: #856404; }
+        .EXPIRED { background: #e2e3e5; color: #383d41; }
+    </style>
+</head>
+<body>
+    <h2>Order Status Stream</h2>
+    <input type="text" id="trackingId" placeholder="Enter Tracking ID (e.g. ord_123)" />
+    <button onclick="connect()">Track Order</button>
+    <div id="statusBadge" style="margin-top: 1rem;"></div>
+    <div class="log" id="log">Waiting for connection...</div>
+
+    <script>
+        let eventSource;
+        function connect() {
+            const trackingId = document.getElementById('trackingId').value;
+            if (!trackingId) return alert('Tracking ID required');
+            
+            const logEl = document.getElementById('log');
+            const statusBadge = document.getElementById('statusBadge');
+            
+            if (eventSource) eventSource.close();
+            
+            logEl.textContent = 'Connecting...';
+            eventSource = new EventSource(`/api/v1/orders/${trackingId}/stream`);
+            
+            eventSource.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                logEl.textContent += '\n' + JSON.stringify(data, null, 2);
+                
+                if (data.status) {
+                    statusBadge.innerHTML = `<span class="status ${data.status}">${data.status}</span>`;
+                }
+
+                if (['CONFIRMED', 'FAILED', 'EXPIRED'].includes(data.status)) {
+                    eventSource.close();
+                    logEl.textContent += '\nConnection closed by server (Terminal State).';
+                }
+            };
+
+            eventSource.onerror = (err) => {
+                logEl.textContent += '\nError connecting to SSE stream.';
+                eventSource.close();
+            };
+        }
+    </script>
+</body>
+</html>
