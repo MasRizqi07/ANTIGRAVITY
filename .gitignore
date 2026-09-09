@@ -39,3 +39,7 @@ Thumbs.db
 .env.production.local
 *.pem
 *.key
+
+**/test-results/
+
+**/playwright-report/
