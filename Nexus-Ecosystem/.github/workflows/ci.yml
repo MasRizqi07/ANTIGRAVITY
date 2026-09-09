@@ -1,0 +1,56 @@
+name: Nexus Ecosystem CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck, Lint, Test & Smoke
+    runs-on: ubuntu-latest
+    env:
+      AUTH_SECRET: "ci-auth-secret-key-must-be-32-chars-long"
+      SEED_ADMIN_PASSWORD: "admin123"
+      SEED_DEV_PASSWORD: "dev123"
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify TypeScript Types
+        run: pnpm run typecheck
+
+      - name: Run Next.js Strict ESLint
+        run: pnpm run lint
+
+      - name: Execute Vitest Test Suite
+        run: pnpm run test
+
+      - name: Execute Production Build
+        run: pnpm run build
+
+      - name: Execute E2E Auth Smoke Verification
+        run: |
+          pnpm run start &
+          node -e "const http = require('http'); const poll = () => http.get('http://localhost:3000', (res) => process.exit(0)).on('error', () => setTimeout(poll, 500)); poll();"
+          node scripts/test-auth.mjs

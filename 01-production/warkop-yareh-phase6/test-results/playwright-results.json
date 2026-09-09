@@ -1,0 +1,128 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\rrgtet47\\AppData\\Local\\fnm_multishells\\20220_1788938858447\\node.exe",
+      "D:\\MY CODE\\ANTIGRAVITY\\01-production\\warkop-yareh-phase6\\node_modules\\playwright\\cli.js",
+      "test",
+      "--grep",
+      "register"
+    ],
+    "configFile": "D:\\MY CODE\\ANTIGRAVITY\\01-production\\warkop-yareh-phase6\\playwright.config.ts",
+    "rootDir": "D:/MY CODE/ANTIGRAVITY/01-production/warkop-yareh-phase6/apps/web/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/MY CODE/ANTIGRAVITY/01-production/warkop-yareh-phase6/test-results/browser",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "D:/MY CODE/ANTIGRAVITY/01-production/warkop-yareh-phase6/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.e2e.ts"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "test-results/playwright-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/playwright-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "commerce.e2e.ts",
+      "file": "commerce.e2e.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "register -> rejected password -> login -> HttpOnly refresh rotation -> logout",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10230,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-09T07:28:14.500Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "900b7d19ca40d2131d95-1399e5b02cdfd6bd6933",
+          "file": "commerce.e2e.ts",
+          "line": 255,
+          "column": 5
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-09T07:27:40.035Z",
+    "duration": 46284.833,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
