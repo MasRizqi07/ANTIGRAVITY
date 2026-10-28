@@ -14,40 +14,20 @@ const categories = [
 ];
 
 const projectMetadata = {
-  'ai-software-startup-advisor': {
-    name: 'AI Software Startup Advisor',
-    desc: 'Konsultan strategi produk & analisis arsitektural bertenaga AI.',
-    tech: 'React 19, Express, SQLite, Gemini API',
-    arch: 'Full-Stack (Vite + Express)',
-    status: 'Siap Pakai (Grade A)',
-  },
-  'cake-boss-platform': {
-    name: 'Cake Boss Platform',
-    desc: 'Platform toko roti digital Surabaya dengan manajemen multi-cabang & aset redesign presisi tinggi.',
-    tech: 'Next.js 15, NestJS, Prisma, PostgreSQL, Redis',
-    arch: 'Full-Stack (Next.js + NestJS REST API) + UI Assets',
-    status: 'Pengembangan UI & Integrasi (Grade B+)',
-  },
-  'portfolio-website': {
-    name: 'Portfolio Website',
-    desc: 'Website portofolio pribadi retro-futuristik bertema terminal interaktif untuk Ahmad Rizqi Mubarok.',
-    tech: 'React, Vite, Tailwind CSS, Framer Motion',
-    arch: 'Single Page App (SPA)',
-    status: 'Siap Pakai (Grade B-)',
-  },
-  'studyflow-ai': {
-    name: 'StudyFlowAI',
-    desc: 'Collaborative AI Planner untuk penjadwalan kalender belajar non-overlapping bagi STEM & Pre-Med.',
-    tech: 'Next.js, Prisma (Postgres), Clerk Auth, OpenAI',
-    arch: 'Next.js Serverless App with Sandbox Mode',
-    status: 'Siap Pakai',
-  },
+  // 01-production
   'ai-coo': {
     name: 'ai-coo',
     desc: 'Platform Chief Operating Officer (COO) virtual berbasis AI untuk UMKM Indonesia.',
     tech: 'Next.js 15, NestJS 11, Prisma, Redis, Turborepo',
     arch: 'Monorepo (pnpm workspaces)',
     status: 'Siap Pakai (Grade A-)',
+  },
+  'ai-software-startup-advisor': {
+    name: 'AI Software Startup Advisor',
+    desc: 'Konsultan strategi produk & analisis arsitektural bertenaga AI.',
+    tech: 'React 19, Express, SQLite, Gemini API',
+    arch: 'Full-Stack (Vite + Express)',
+    status: 'Siap Pakai (Grade A)',
   },
   'careerforge-ai': {
     name: 'careerforge-ai',
@@ -56,12 +36,33 @@ const projectMetadata = {
     arch: 'Next.js Client-Server',
     status: 'Siap Pakai (Grade B-)',
   },
+  'nexus-ecosystem': {
+    name: 'Nexus Ecosystem',
+    desc: 'Ekosistem e-commerce & workspace developer terpadu dengan visualizer engine, JSON/Regex tools, dan concurrency-guarded checkout.',
+    tech: 'Next.js 15, React 19, Drizzle ORM, PostgreSQL, Vitest, Tailwind CSS',
+    arch: 'Full-Stack App Router + Modular Workspaces',
+    status: 'Siap Pakai (Grade A)',
+  },
+  'rsi-islam-sby': {
+    name: 'RS Islam Surabaya A. Yani',
+    desc: 'Portal rumah sakit & sistem booking rawat jalan online berbasis konsep "Hijau Tower Sanctuary".',
+    tech: 'Next.js 16, React 19, Better-Auth, Prisma, Tailwind CSS',
+    arch: 'Full-Stack Web (App Router + Server Actions)',
+    status: 'Siap Pakai (Grade A)',
+  },
   seapedia: {
     name: 'seapedia',
     desc: 'Marketplace e-commerce multi-role (Admin, Seller, Buyer, Driver) dengan sweeper SLA otomatis.',
     tech: 'Next.js 14, NestJS, Prisma, Redis, Turborepo',
     arch: 'Monorepo (pnpm workspaces)',
     status: 'Siap Pakai (Level 7)',
+  },
+  'studyflow-ai': {
+    name: 'StudyFlowAI',
+    desc: 'Collaborative AI Planner untuk penjadwalan kalender belajar non-overlapping bagi STEM & Pre-Med.',
+    tech: 'Next.js, Prisma (Postgres), Clerk Auth, OpenAI',
+    arch: 'Next.js Serverless App with Sandbox Mode',
+    status: 'Siap Pakai',
   },
   'warkop-yareh': {
     name: 'warkop-yareh',
@@ -70,19 +71,14 @@ const projectMetadata = {
     arch: 'Monorepo (DDD + Clean Architecture)',
     status: 'Siap Pakai (Grade A-)',
   },
-  'e-commerce-web': {
-    name: 'E-Commerce Web',
-    desc: 'Platform e-commerce Next.js & landing page.',
-    tech: 'Next.js (JavaScript/TypeScript)',
-    arch: 'Full-Stack (Next.js)',
-    status: 'Siap Pakai (Grade B)',
-  },
-  'venture-blueprint': {
-    name: 'Venture Blueprint',
-    desc: 'Kumpulan dokumen cetak biru produk, riset pasar, strategi MVP, dan instruksi AI Coding.',
-    tech: 'Markdown Documentation',
-    arch: 'Documentation Platform',
-    status: 'Siap Pakai',
+
+  // 02-in-progress
+  'cake-boss-platform': {
+    name: 'Cake Boss Platform',
+    desc: 'Platform toko roti digital Surabaya dengan manajemen multi-cabang & aset redesign presisi tinggi.',
+    tech: 'Next.js 15, NestJS, Prisma, PostgreSQL, Redis',
+    arch: 'Full-Stack (Next.js + NestJS REST API) + UI Assets',
+    status: 'Pengembangan UI & Integrasi (Grade B+)',
   },
   'context-forge': {
     name: 'context-forge',
@@ -90,6 +86,98 @@ const projectMetadata = {
     tech: 'TypeScript, Node.js',
     arch: 'Shared Package / Monorepo Tooling',
     status: 'Dalam Pengembangan',
+  },
+  'google-cloud-extended-next-2026': {
+    name: 'High-Concurrency Event Ticketing (GCloud)',
+    desc: 'Arsitektur checkout tiket event anti-race condition berkecepatan tinggi dengan integrasi Google Cloud Run.',
+    tech: 'TypeScript, Node.js, PHP Laravel, Redis, Google Cloud Run',
+    arch: 'Microservices & Event Worker (Cloud Run + SSE)',
+    status: 'Dalam Pengembangan (Grade A-)',
+  },
+  'Kasbuka-Project': {
+    name: 'Kasbuka (Buku Kas Terbuka)',
+    desc: 'Buku kas digital transparansi penggalangan dana publik dengan verifikasi bukti & integrasi Midtrans.',
+    tech: 'Next.js 16, React 19, Prisma, PostgreSQL, Zod, Midtrans',
+    arch: 'Full-Stack Serverless Web',
+    status: 'Dalam Pengembangan (Grade B+)',
+  },
+
+  // 03-portfolio-showcase
+  'portfolio-website': {
+    name: 'Portfolio Website',
+    desc: 'Website portofolio pribadi retro-futuristik bertema terminal interaktif untuk Ahmad Rizqi Mubarok.',
+    tech: 'React, Vite, Tailwind CSS, Framer Motion',
+    arch: 'Single Page App (SPA)',
+    status: 'Siap Pakai (Grade B-)',
+  },
+  'tugas-akhir-project-gdgoc-its': {
+    name: 'Showcase Web Dev GDGoC ITATS',
+    desc: 'Website portofolio interaktif dengan design token modern, scroll observer, dan animasi CSS native.',
+    tech: 'HTML5, Modern CSS3 Tokens, Vanilla JavaScript',
+    arch: 'Static Interactive Showcase',
+    status: 'Siap Pakai (Grade A)',
+  },
+
+  // 04-experimental
+  'e-commerce-web': {
+    name: 'E-Commerce Web',
+    desc: 'Platform e-commerce Next.js & landing page.',
+    tech: 'Next.js (JavaScript/TypeScript)',
+    arch: 'Full-Stack (Next.js)',
+    status: 'Siap Pakai (Grade B)',
+  },
+  'gemma-security-workshop': {
+    name: 'Enterprise AI Security Pipeline (Gemma 2)',
+    desc: 'Pipeline microservices keamanan AI enterprise: Ingress/Egress Guard (OWASP LLM), Tool Router, dan Kepatuhan EU AI Act.',
+    tech: 'Python, Gemma 2 (2B), FunctionGemma, FastAPI/Uvicorn, Docker',
+    arch: 'Microservices AI Security Pipeline',
+    status: 'Siap Pakai (Google I/O Extended Module)',
+  },
+
+  // 05-archive
+  'carreer-intelligence-platform': {
+    name: 'Career Intelligence Platform',
+    desc: 'Platform manajemen karir mahasiswa dan pelacakan jejak alumni universitas berbasis enterprise.',
+    tech: 'PHP 8.2, Laravel, MySQL, Bootstrap',
+    arch: 'Monolith MVC (Laravel)',
+    status: 'Diarsipkan (Legacy Reference)',
+  },
+  cuancerdas: {
+    name: 'CuanCerdas (Finansial Gen-Z)',
+    desc: 'Platform robo-advisor dan simulasi edukasi finansial untuk generasi Z berbasis gamifikasi.',
+    tech: 'PHP 8.2, Laravel, MySQL, Tailwind CSS',
+    arch: 'Monolith MVC (Laravel)',
+    status: 'Diarsipkan (Legacy Reference)',
+  },
+  'example-app': {
+    name: 'Laravel Passkey & WebAuthn Boilerplate',
+    desc: 'Boilerplate autentikasi modern Laravel dengan dukungan Fortify dan biometric Passkeys/WebAuthn.',
+    tech: 'PHP 8.3, Laravel Fortify, WebAuthn, Inertia.js',
+    arch: 'Full-Stack Starter Kit',
+    status: 'Diarsipkan (Starter Reference)',
+  },
+  'icl-itats': {
+    name: 'ICL ITATS (Integrated Career Link)',
+    desc: 'Sistem portal karir & kolaborasi industri terintegrasi untuk civitas akademika ITATS.',
+    tech: 'PHP 8.2, Laravel, MySQL, Alpine.js',
+    arch: 'Monolith MVC (Laravel)',
+    status: 'Diarsipkan (Legacy Reference)',
+  },
+  smartakademik: {
+    name: 'SmartAkademik MAN 4 Jombang',
+    desc: 'Sistem informasi akademik madrasah aliyah untuk manajemen nilai, presensi, dan jadwal siswa.',
+    tech: 'PHP 8.2, Laravel, MySQL, Livewire',
+    arch: 'Monolith MVC (Laravel)',
+    status: 'Diarsipkan (Legacy Reference)',
+  },
+
+  // 06-docs-blueprints
+  'venture-blueprint': {
+    name: 'Venture Blueprint',
+    desc: 'Kumpulan dokumen cetak biru produk, riset pasar, strategi MVP, dan instruksi AI Coding.',
+    tech: 'Markdown Documentation',
+    arch: 'Documentation Platform',
+    status: 'Siap Pakai',
   },
 };
 

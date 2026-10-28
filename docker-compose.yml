@@ -131,6 +131,78 @@ services:
       timeout: 3s
       retries: 5
 
+  # RSI Islam Surabaya Services
+  rsi-islam-postgres:
+    image: postgres:16-alpine
+    container_name: rsi-islam-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: rsi_islam_tower
+    ports:
+      - '5436:5432'
+    volumes:
+      - rsi-islam-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d rsi_islam_tower']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Kasbuka Project Services
+  kasbuka-postgres:
+    image: postgres:16-alpine
+    container_name: kasbuka-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: kasbuka
+    ports:
+      - '5437:5432'
+    volumes:
+      - kasbuka-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d kasbuka']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Nexus Ecosystem Services
+  nexus-postgres:
+    image: postgres:16-alpine
+    container_name: nexus-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nexus_db
+    ports:
+      - '5438:5432'
+    volumes:
+      - nexus-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d nexus_db']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Google Cloud Ticketing Redis
+  gcloud-tickets-redis:
+    image: redis:7-alpine
+    container_name: gcloud-tickets-redis
+    restart: unless-stopped
+    ports:
+      - '6383:6379'
+    volumes:
+      - gcloud-tickets-redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
 volumes:
   aicoo-pgdata:
   aicoo-redisdata:
@@ -140,3 +212,7 @@ volumes:
   warkop-redisdata:
   cakeboss-pgdata:
   cakeboss-redisdata:
+  rsi-islam-pgdata:
+  kasbuka-pgdata:
+  nexus-pgdata:
+  gcloud-tickets-redisdata:

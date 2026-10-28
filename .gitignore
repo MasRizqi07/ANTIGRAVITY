@@ -2,6 +2,10 @@
 **/node_modules/
 node_modules/
 
+# Ignore vendor (PHP / Composer) globally across all projects
+**/vendor/
+vendor/
+
 # Ignore Next.js, Turborepo and build/dist folders globally
 **/.next/
 .next/
@@ -43,3 +47,8 @@ Thumbs.db
 **/test-results/
 
 **/playwright-report/
+
+# Prevent accidental npm lockfile in pnpm workspace
+package-lock.json
+npm-debug.log*
+yarn-error.log*

@@ -7,6 +7,11 @@
     "format:check": "prettier --check \"packages/**/*.{ts,tsx,js,jsx,json,md}\" \"*.{js,json,md,yaml,yml,mjs}\"",
     "lint": "eslint \"packages/**/*.{ts,js,mjs}\" \"eslint.config.mjs\"",
     "clean": "pnpm -r exec rimraf dist node_modules",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:status": "docker compose ps",
+    "sync:readme": "node scripts/update-readme.js",
+    "sync:readme:check": "node scripts/update-readme.js --check",
     "prepare": "husky"
   },
   "devDependencies": {
