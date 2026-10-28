@@ -12,6 +12,8 @@
     "db:status": "docker compose ps",
     "sync:readme": "node scripts/update-readme.js",
     "sync:readme:check": "node scripts/update-readme.js --check",
+    "dashboard": "start _hub-dashboard/dashboard/index.html",
+    "dashboard:serve": "npx serve _hub-dashboard/dashboard -l 4000",
     "prepare": "husky"
   },
   "devDependencies": {

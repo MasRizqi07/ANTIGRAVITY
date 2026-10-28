@@ -392,6 +392,69 @@
       color: var(--text-muted);
       font-weight: 500;
     }
+
+    /* Project Catalog Styles */
+    .hub-tab {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.4rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .hub-tab:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+    }
+    .hub-tab.active {
+      background: var(--accent-cyan);
+      color: #0a0b0d;
+      font-weight: 700;
+      border-color: var(--accent-cyan);
+    }
+    .proj-card {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s ease;
+    }
+    .proj-card:hover {
+      border-color: var(--accent-cyan);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 240, 255, 0.1);
+    }
+    .proj-pill {
+      font-size: 0.72rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .proj-port {
+      font-size: 0.72rem;
+      padding: 0.2rem 0.45rem;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+    }
+    .port-db {
+      background: rgba(0, 255, 102, 0.1);
+      color: var(--accent-green);
+      border: 1px solid rgba(0, 255, 102, 0.25);
+    }
+    .port-redis {
+      background: rgba(255, 0, 100, 0.1);
+      color: #ff3366;
+      border: 1px solid rgba(255, 0, 100, 0.25);
+    }
   </style>
 </head>
 <body>
@@ -633,9 +696,143 @@
         </div>
       </div>
     </div>
+
+    <!-- Master Project Directory & Catalog Card -->
+    <div class="card" style="grid-column: span 2;">
+      <div class="card-title">
+        <span>Master Project Directory & Catalog (22 Projects)</span>
+        <span id="hubProjCounter" style="font-size: 0.85rem; color: var(--text-muted); font-weight: normal;">Showing 22 projects</span>
+      </div>
+
+      <!-- Search & Category Filters -->
+      <div style="display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 1.5rem;">
+        <input 
+          type="text" 
+          id="hubSearchInput" 
+          placeholder="Cari nama proyek, tech stack (Next.js, NestJS, Prisma, Redis, Midtrans...), atau kategori..." 
+          style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 10px; padding: 0.75rem 1rem; color: var(--text-main); font-family: inherit; font-size: 0.85rem; outline: none;"
+          oninput="filterHubProjects()"
+        />
+
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="hubFilterTabs">
+          <button class="hub-tab active" data-cat="all" onclick="setHubCat('all')">Semua (22)</button>
+          <button class="hub-tab" data-cat="01-production" onclick="setHubCat('01-production')">01-production (8)</button>
+          <button class="hub-tab" data-cat="02-in-progress" onclick="setHubCat('02-in-progress')">02-in-progress (4)</button>
+          <button class="hub-tab" data-cat="03-portfolio-showcase" onclick="setHubCat('03-portfolio-showcase')">03-showcase (2)</button>
+          <button class="hub-tab" data-cat="04-experimental" onclick="setHubCat('04-experimental')">04-experimental (2)</button>
+          <button class="hub-tab" data-cat="05-archive" onclick="setHubCat('05-archive')">05-archive (5)</button>
+          <button class="hub-tab" data-cat="06-docs-blueprints" onclick="setHubCat('06-docs-blueprints')">06-blueprints (1)</button>
+        </div>
+      </div>
+
+      <!-- Project Cards Grid -->
+      <div id="hubProjectsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem;">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
   </main>
 
   <script>
+    const hubCatalog = [
+      { name: "ai-coo", cat: "01-production", desc: "Platform Virtual COO berbasis AI untuk UMKM Indonesia.", tech: ["Next.js 15", "NestJS 11", "Prisma", "Redis", "Turborepo"], arch: "Monorepo", status: "Siap Pakai (Grade A-)", db: "5432", redis: "6379", repo: "https://github.com/MasRizqi07/ai-coo", path: "01-production/ai-coo" },
+      { name: "AI Software Startup Advisor", cat: "01-production", desc: "Konsultan strategi produk & analisis arsitektural bertenaga AI.", tech: ["React 19", "Express", "SQLite", "Gemini API"], arch: "Full-Stack", status: "Siap Pakai (Grade A)", repo: "https://github.com/MasRizqi07/ai-software-startup-advisor", path: "01-production/ai-software-startup-advisor" },
+      { name: "careerforge-ai", cat: "01-production", desc: "Asisten optimalisasi resume & analisis kecocokan sistem ATS bertenaga AI.", tech: ["Next.js 16", "Supabase", "Tailwind CSS", "Vitest"], arch: "Next.js App", status: "Siap Pakai (Grade B-)", repo: "https://github.com/MasRizqi07/careerforge-ai", path: "01-production/careerforge-ai" },
+      { name: "Nexus Ecosystem", cat: "01-production", desc: "Ekosistem e-commerce & workspace developer terpadu dengan visualizer engine, tools, dan concurrency guard.", tech: ["Next.js 15", "React 19", "Drizzle ORM", "PostgreSQL", "Vitest"], arch: "Modular Workspace", status: "Siap Pakai (Grade A)", db: "5438", repo: "https://github.com/MasRizqi07/Nexus-Ecosystem", path: "01-production/nexus-ecosystem" },
+      { name: "RS Islam Surabaya A. Yani", cat: "01-production", desc: "Portal rumah sakit & sistem booking rawat jalan online berbasis konsep 'Hijau Tower Sanctuary'.", tech: ["Next.js 16", "React 19", "Better-Auth", "Prisma", "Tailwind"], arch: "Full-Stack Web", status: "Siap Pakai (Grade A)", db: "5436", repo: "https://github.com/MasRizqi07/rsi-islam-surabaya", path: "01-production/rsi-islam-sby" },
+      { name: "seapedia", cat: "01-production", desc: "Marketplace e-commerce multi-role (Admin, Seller, Buyer, Driver) dengan sweeper SLA otomatis.", tech: ["Next.js 14", "NestJS", "Prisma", "Redis BullMQ", "Postgres RLS"], arch: "Monorepo Level 7", status: "Siap Pakai", db: "5433", redis: "6380", repo: "https://github.com/MasRizqi07/seapedia", path: "01-production/seapedia" },
+      { name: "StudyFlowAI", cat: "01-production", desc: "Collaborative AI Planner untuk penjadwalan kalender belajar non-overlapping bagi STEM & Pre-Med.", tech: ["Next.js", "Prisma", "Clerk Auth", "OpenAI"], arch: "Serverless with Sandbox", status: "Siap Pakai", db: "Neon Cloud", repo: "https://github.com/MasRizqi07/studyflowai", path: "01-production/studyflow-ai" },
+      { name: "warkop-yareh", cat: "01-production", desc: "Ekosistem digital coworking space & warkop modern dengan integrasi payment gateway Midtrans.", tech: ["Next.js 16", "NestJS 11", "Prisma", "Redis BullMQ", "Midtrans"], arch: "Clean Architecture DDD", status: "Siap Pakai (Grade A-)", db: "5434", redis: "6381", repo: "https://github.com/MasRizqi07/warkop-yareh", path: "01-production/warkop-yareh" },
+      { name: "Cake Boss Platform", cat: "02-in-progress", desc: "Platform toko roti digital Surabaya dengan manajemen multi-cabang & aset redesign presisi tinggi.", tech: ["Next.js 15", "NestJS", "Prisma", "PostgreSQL", "Redis"], arch: "Full-Stack + Mockups", status: "Pengembangan (Grade B+)", db: "5435", redis: "6382", repo: "https://github.com/MasRizqi07/cake-boss-platform", path: "02-in-progress/cake-boss-platform" },
+      { name: "context-forge", cat: "02-in-progress", desc: "Sistem utility context management untuk integrasi LLM & AI.", tech: ["TypeScript", "Node.js", "Context Tokenizer"], arch: "Shared Package", status: "Dalam Pengembangan", repo: "https://github.com/MasRizqi07/context-forge", path: "02-in-progress/context-forge" },
+      { name: "High-Concurrency Event Ticketing", cat: "02-in-progress", desc: "Arsitektur checkout tiket event anti-race condition berkecepatan tinggi dengan Google Cloud Run.", tech: ["TypeScript", "Node.js", "PHP Laravel", "Redis", "Cloud Run"], arch: "Microservices + Worker", status: "Dalam Pengembangan", redis: "6383", path: "02-in-progress/google-cloud-extended-next-2026" },
+      { name: "Kasbuka (Buku Kas Terbuka)", cat: "02-in-progress", desc: "Buku kas digital transparansi penggalangan dana publik dengan verifikasi bukti & Midtrans.", tech: ["Next.js 16", "React 19", "Prisma", "PostgreSQL", "Zod", "Midtrans"], arch: "Serverless Web", status: "Pengembangan (Grade B+)", db: "5437", repo: "https://github.com/MasRizqi07/Kasbuka-Project", path: "02-in-progress/Kasbuka-Project" },
+      { name: "Portfolio Website", cat: "03-portfolio-showcase", desc: "Website portofolio pribadi retro-futuristik bertema terminal interaktif untuk Ahmad Rizqi Mubarok.", tech: ["React", "Vite", "Tailwind CSS", "Framer Motion"], arch: "Single Page App (SPA)", status: "Siap Pakai", repo: "https://github.com/MasRizqi07/portfolio-website", path: "03-portfolio-showcase/portfolio-website" },
+      { name: "Showcase Web Dev GDGoC ITATS", cat: "03-portfolio-showcase", desc: "Website portofolio interaktif dengan design token modern, scroll observer, dan animasi CSS native.", tech: ["HTML5", "Modern CSS3 Tokens", "Vanilla JS"], arch: "Static Showcase", status: "Siap Pakai", repo: "https://github.com/MasRizqi07/tugas-akhir-prohect-gdgoc-its", path: "03-portfolio-showcase/tugas-akhir-project-gdgoc-its" },
+      { name: "E-Commerce Web", cat: "04-experimental", desc: "Platform e-commerce Next.js & landing page prototype.", tech: ["Next.js", "React", "Tailwind CSS"], arch: "Full-Stack Prototype", status: "Siap Pakai", repo: "https://github.com/MasRizqi07/e-commerce-web", path: "04-experimental/e-commerce-web" },
+      { name: "Enterprise AI Security Pipeline", cat: "04-experimental", desc: "Pipeline microservices keamanan AI enterprise: Ingress/Egress Guard, Tool Router, dan EU AI Act.", tech: ["Python", "Gemma 2 (2B)", "FunctionGemma", "FastAPI", "Docker"], arch: "Microservices AI Pipeline", status: "Siap Pakai", repo: "https://github.com/MasRizqi07/iox26-gemma-security-workshop", path: "04-experimental/gemma-security-workshop" },
+      { name: "Career Intelligence Platform", cat: "05-archive", desc: "Platform manajemen karir mahasiswa dan pelacakan jejak alumni universitas.", tech: ["PHP 8.2", "Laravel", "MySQL", "Bootstrap"], arch: "Monolith MVC", status: "Diarsipkan", repo: "https://github.com/MasRizqi07/carreer-intelligence-platform", path: "05-archive/carreer-intelligence-platform" },
+      { name: "CuanCerdas (Finansial Gen-Z)", cat: "05-archive", desc: "Platform robo-advisor dan simulasi edukasi finansial untuk generasi Z berbasis gamifikasi.", tech: ["PHP 8.2", "Laravel", "MySQL", "Tailwind CSS"], arch: "Monolith MVC", status: "Diarsipkan", repo: "https://github.com/MasRizqi07/CuanCerdas", path: "05-archive/cuancerdas" },
+      { name: "Laravel Passkey & WebAuthn", cat: "05-archive", desc: "Boilerplate autentikasi modern Laravel dengan dukungan Fortify dan biometric Passkeys.", tech: ["PHP 8.3", "Laravel Fortify", "WebAuthn", "Inertia.js"], arch: "Full-Stack Starter", status: "Diarsipkan", path: "05-archive/example-app" },
+      { name: "ICL ITATS (Career Link)", cat: "05-archive", desc: "Sistem portal karir & kolaborasi industri terintegrasi untuk civitas akademika ITATS.", tech: ["PHP 8.2", "Laravel", "MySQL", "Alpine.js"], arch: "Monolith MVC", status: "Diarsipkan", repo: "https://github.com/MasRizqi07/ICL-ITATS", path: "05-archive/icl-itats" },
+      { name: "SmartAkademik MAN 4 Jombang", cat: "05-archive", desc: "Sistem informasi akademik madrasah aliyah untuk manajemen nilai, presensi, dan jadwal siswa.", tech: ["PHP 8.2", "Laravel", "MySQL", "Livewire"], arch: "Monolith MVC", status: "Diarsipkan", repo: "https://github.com/MasRizqi07/smartakademik", path: "05-archive/smartakademik" },
+      { name: "Venture Blueprint", cat: "06-docs-blueprints", desc: "Kumpulan dokumen cetak biru produk, riset pasar, strategi MVP, dan instruksi AI Coding.", tech: ["Markdown", "PRD Blueprint", "Architecture Guide"], arch: "Documentation Platform", status: "Siap Pakai", repo: "https://github.com/MasRizqi07/venture-blueprint", path: "06-docs-blueprints/venture-blueprint" }
+    ];
+
+    let currentHubCat = 'all';
+    let hubSearchQuery = '';
+
+    function renderHubProjects() {
+      const container = document.getElementById('hubProjectsGrid');
+      const counter = document.getElementById('hubProjCounter');
+      if (!container) return;
+
+      const filtered = hubCatalog.filter(p => {
+        const matchesCat = currentHubCat === 'all' || p.cat === currentHubCat;
+        const q = hubSearchQuery.toLowerCase();
+        const matchesQuery = !q ||
+          p.name.toLowerCase().includes(q) ||
+          p.desc.toLowerCase().includes(q) ||
+          p.cat.toLowerCase().includes(q) ||
+          p.arch.toLowerCase().includes(q) ||
+          p.tech.some(t => t.toLowerCase().includes(q));
+        return matchesCat && matchesQuery;
+      });
+
+      counter.innerText = `Menampilkan ${filtered.length} dari ${hubCatalog.length} proyek`;
+
+      container.innerHTML = filtered.map(p => {
+        const techHtml = p.tech.map(t => `<span class="proj-pill">${t}</span>`).join(' ');
+        const dbBadge = p.db ? `<span class="proj-port port-db">🐘 :${p.db}</span>` : '';
+        const redisBadge = p.redis ? `<span class="proj-port port-redis">⚡ :${p.redis}</span>` : '';
+        const ghLink = p.repo ? `<a href="${p.repo}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-cyan); text-decoration: none; font-size: 0.75rem; font-weight: 600;">GitHub ↗</a>` : '<span style="color: var(--text-muted); font-size: 0.75rem;">Local</span>';
+
+        return `
+          <div class="proj-card">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.7rem; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 0.05em;">${p.cat}</span>
+                <span style="font-size: 0.7rem; color: var(--text-muted);">${p.status}</span>
+              </div>
+              <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.4rem;">${p.name}</h3>
+              <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.75rem;">${p.desc}</p>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.75rem;">
+                ${techHtml}
+              </div>
+            </div>
+            <div style="padding-top: 0.75rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+              <div style="display: flex; gap: 0.35rem; align-items: center;">
+                ${dbBadge}
+                ${redisBadge}
+              </div>
+              ${ghLink}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function setHubCat(cat) {
+      currentHubCat = cat;
+      document.querySelectorAll('.hub-tab').forEach(b => {
+        if (b.getAttribute('data-cat') === cat) {
+          b.classList.add('active');
+        } else {
+          b.classList.remove('active');
+        }
+      });
+      renderHubProjects();
+    }
+
+    function filterHubProjects() {
+      hubSearchQuery = document.getElementById('hubSearchInput').value;
+      renderHubProjects();
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      renderHubProjects();
+    });
+    renderHubProjects();
     function selectNode(id, name, type, tech, desc) {
       const infoPanel = document.getElementById('infoPanel');
       const infoTitle = document.getElementById('infoTitle');
